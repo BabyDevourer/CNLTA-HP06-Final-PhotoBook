@@ -1,7 +1,3 @@
-Chắc chắn rồi! Dựa trên file mẫu `MODEL.md` bạn cung cấp, đây là phiên bản tương ứng cho ứng dụng **Trình Tạo Thiệp Chúc Mừng**.
-
----
---- START OF FILE DATA_MODEL.md ---
 
 # 📦 Data Model – Greeting Card Creator App
 
