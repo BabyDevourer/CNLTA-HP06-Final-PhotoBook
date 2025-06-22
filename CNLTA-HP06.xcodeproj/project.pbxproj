@@ -85,7 +85,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 7C6579932E07B35C006677F2 /* Build configuration list for PBXProject "CNLTA-HP06-Final-PhotoBook" */;
+			buildConfigurationList = 7C6579932E07B35C006677F2 /* Build configuration list for PBXProject "CNLTA-HP06" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -305,7 +305,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7C6579932E07B35C006677F2 /* Build configuration list for PBXProject "CNLTA-HP06-Final-PhotoBook" */ = {
+		7C6579932E07B35C006677F2 /* Build configuration list for PBXProject "CNLTA-HP06" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7C6579A42E07B35D006677F2 /* Debug */,
