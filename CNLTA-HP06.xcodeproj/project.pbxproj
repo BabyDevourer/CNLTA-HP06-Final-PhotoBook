@@ -11,9 +11,9 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		7C65799A2E07B35C006677F2 /* CNLTA-HP06-Final-PhotoBook */ = {
+		7C65799A2E07B35C006677F2 /* CNLTA-HP06 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "CNLTA-HP06-Final-PhotoBook";
+			path = "CNLTA-HP06";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		7C65798F2E07B35C006677F2 = {
 			isa = PBXGroup;
 			children = (
-				7C65799A2E07B35C006677F2 /* CNLTA-HP06-Final-PhotoBook */,
+				7C65799A2E07B35C006677F2 /* CNLTA-HP06 */,
 				7C6579992E07B35C006677F2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -61,7 +61,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				7C65799A2E07B35C006677F2 /* CNLTA-HP06-Final-PhotoBook */,
+				7C65799A2E07B35C006677F2 /* CNLTA-HP06 */,
 			);
 			name = "CNLTA-HP06-Final-PhotoBook";
 			packageProductDependencies = (
