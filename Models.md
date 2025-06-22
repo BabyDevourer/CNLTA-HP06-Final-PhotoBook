@@ -1,120 +1,109 @@
-Simple Greeting Card Creator (MVP) 🎉
+Chắc chắn rồi! Dựa trên file mẫu `MODEL.md` bạn cung cấp, đây là phiên bản tương ứng cho ứng dụng **Trình Tạo Thiệp Chúc Mừng**.
 
-A SwiftUI application that allows users to create a simple, personalized digital greeting card. This project serves as a practical example of fundamental SwiftUI concepts, including state management, UI components, and basic app architecture.
+---
+--- START OF FILE DATA_MODEL.md ---
 
-🌟 Features
+# 📦 Data Model – Greeting Card Creator App
 
-🖼️ Select Background Image: Choose from a predefined set of background images.
+## 🧱 1. Các Model chính
 
-✍️ Custom Greeting Message: Input a personalized message for the card.
+### ✅ `GreetingCard` – đại diện cho **một tấm thiệp đã hoàn thành**
 
-🎨 Full Style Control:
+```swift
+struct GreetingCard: Identifiable, Codable {
+    var id: UUID = UUID()
+    var greetingText: String        // Lời chúc trên thiệp
+    var fontName: String            // Tên font chữ đã chọn
+    var fontSize: CGFloat           // Kích thước chữ
+    var textColorData: Data         // Dữ liệu màu chữ (để Codable)
+    var backgroundImageName: String // Tên ảnh nền đã chọn
+    var dateCreated: Date           // Ngày tạo thiệp
+}
+```
 
-Change the text color from a list of options.
+📌 **Giải thích:**
 
-Select a custom font style.
+*   `greetingText`: Nội dung lời chúc do người dùng nhập.
+*   `fontName`, `fontSize`: Lưu lại thông tin font chữ đã tùy chỉnh.
+*   `textColorData`: `Color` không trực tiếp `Codable`. Ta cần chuyển nó sang `Data` để lưu và tải.
+*   `backgroundImageName`: Tên của ảnh nền trong `Assets.xcassets` mà người dùng đã chọn.
+*   `dateCreated`: Để sắp xếp danh sách thiệp đã lưu theo thời gian.
 
-Adjust the font size with a slider.
+---
 
-👀 Live Preview: See the card update in real-time as you make changes.
+### ✅ `BackgroundOption` – đại diện cho **một lựa chọn ảnh nền**
 
-📸 Screenshot
-<!-- TODO: Add a screenshot or a short GIF of the app in action here! -->
+```swift
+struct BackgroundOption: Identifiable, Hashable {
+    let id = UUID()
+    let imageName: String      // Tên ảnh trong Assets Catalog
+    let displayName: String    // Tên hiển thị trong UI
+}
+```
 
+📌 **Giải thích:**
 
-![alt text](https://via.placeholder.com/350x700/f0f0f0/000000?text=App+Screenshot+Goes+Here)
+*   Dùng để tạo danh sách các ảnh nền cho người dùng lựa chọn một cách có tổ chức. `Identifiable` và `Hashable` giúp nó hoạt động tốt với `ForEach` và `Picker`.
 
-🛠️ Tech Stack & Core SwiftUI Concepts
+---
 
-SwiftUI Framework: The entire UI is built declaratively with SwiftUI.
+### ✅ `FontOption` – đại diện cho **một lựa chọn font chữ**
 
-MVVM-like Architecture: The app uses a ViewModel (CardViewModel) to separate UI state and logic from the View.
+```swift
+struct FontOption: Identifiable, Hashable {
+    let id = UUID()
+    let fontName: String       // Tên hệ thống của font
+    let displayName: String    // Tên thân thiện hiển thị cho người dùng
+}
+```
 
-@StateObject & @ObservedObject: To create and manage the lifecycle of the CardViewModel as the "Source of Truth".
+📌 **Giải thích:**
 
-@Published: To automatically notify the UI of any state changes within the ViewModel.
+*   Tương tự `BackgroundOption`, struct này giúp quản lý danh sách các font chữ có thể chọn.
 
-UI Components: ZStack, VStack, Form, Section, Image, Text, TextField, Picker, Slider.
+---
 
-Data-Driven Views: ForEach is used to dynamically generate lists of options from data models.
+## 📂 2. Lưu trữ dữ liệu
 
-Identifiable & Hashable: Protocols used on data models to ensure seamless integration with SwiftUI components like Picker and ForEach.
+### ✅ Lưu danh sách `GreetingCard`:
 
-📂 Project Structure
+*   Dùng `@Published var savedCards: [GreetingCard]` trong `CardViewModel`.
+*   Lưu và tải với `UserDefaults` (hoặc `FileManager` cho dữ liệu lớn hơn) bằng `JSONEncoder`/`JSONDecoder`.
 
-The project code is organized to separate concerns, making it clean and easy to navigate.
+```swift
+func saveCards() {
+    // Trước khi encode, cần chuyển đổi Color sang Data nếu đang dùng
+    if let encoded = try? JSONEncoder().encode(savedCards) {
+        UserDefaults.standard.set(encoded, forKey: "SavedGreetingCards")
+    }
+}
 
-CardCreatorView.swift: Contains the main SwiftUI View for the user interface.
+func loadCards() {
+    if let data = UserDefaults.standard.data(forKey: "SavedGreetingCards"),
+       let decoded = try? JSONDecoder().decode([GreetingCard].self, from: data) {
+        self.savedCards = decoded
+        // Sau khi decode, cần chuyển đổi Data ngược lại thành Color để hiển thị
+    }
+}
+```
 
-Models.swift: Defines all data structures (structs) and the ViewModel (class) for the application.
+---
 
-Assets.xcassets: Stores all image assets (like background images) and can also define custom color sets.
+## 📚 Tổng kết luồng dữ liệu
 
-🏗️ Data Models & Architecture
+| Thành phần         | Vai trò                  | Mối quan hệ                                                         |
+| ------------------ | ------------------------- | ------------------------------------------------------------------- |
+| `GreetingCard`     | Thiệp hoàn chỉnh          | Lưu lại kết quả lựa chọn của người dùng (text, font, màu, ảnh nền) |
+| `BackgroundOption` | Lựa chọn ảnh nền          | Cung cấp dữ liệu cho danh sách/lưới chọn ảnh nền                   |
+| `FontOption`       | Lựa chọn font chữ         | Cung cấp dữ liệu cho `Picker` chọn font chữ                         |
+| `CardViewModel`    | Quản lý dữ liệu           | Chứa danh sách các thiệp đã lưu, xử lý logic save/load              |
+| `UserDefaults`     | Lưu trữ cục bộ            | Lưu lại mảng `[GreetingCard]` sau mỗi lần người dùng lưu thiệp       |
 
-The application's architecture is centered around a CardViewModel which acts as the single source of truth for the UI.
+---
 
-CardViewModel
+👉 **Gợi ý mở rộng:**
 
-This ObservableObject class holds the current state of the greeting card being edited. The View subscribes to this object and updates automatically when its @Published properties change.
-
-Property	Type	Description
-greetingText	String	Stores the user's custom message that appears on the card.
-selectedFontSize	CGFloat	The current size of the font for the greeting text.
-selectedBackground	BackgroundOption	The currently selected BackgroundOption object.
-selectedFont	FontOption	The currently selected FontOption object.
-selectedColor	Color	The currently selected Color for the greeting text.
-Core Data Structures
-
-These structs define the individual, selectable items. They conform to Identifiable and Hashable to work seamlessly with SwiftUI.
-
-BackgroundOption
-
-Represents a single background image choice.
-
-Property	Type	Description
-id	UUID	A unique identifier for the instance.
-imageName	String	The name of the image in the Assets.xcassets catalog.
-FontOption
-
-Represents a single font style choice.
-
-Property	Type	Description
-id	UUID	A unique identifier for the instance.
-fontName	String	The system name for the font (e.g., "AvenirNext-Bold").
-displayName	String	A user-friendly name for display in the UI (e.g., "Avenir Bold").
-AppData (Static Data Provider)
-
-This struct acts as a centralized, static container for all available options, making it easy to manage data in one place.
-
-Property	Type	Description
-backgroundOptions	[BackgroundOption]	A static array of all available BackgroundOptions.
-fontOptions	[FontOption]	A static array of all available FontOptions.
-colorOptions	[Color]	A static array of all available Colors for the text.
-🚀 Getting Started
-
-Clone the repository.
-
-Generated bash
-git clone [your-repository-url]
-
-
-Add Assets: Place your background images (e.g., bg_beach.jpg, bg_forest.jpg) into the Assets.xcassets catalog. Ensure the names match those defined in AppData within the Models.swift file.
-
-Open in Xcode: Open the .xcodeproj file.
-
-Build and Run: Select an iOS simulator or a physical device and press the Run button (▶).
-
-🔮 Future Enhancements
-
-Save & Share: Implement functionality to save the created card to the photo library and share it via the system share sheet.
-
-More Content: Allow users to add images from their own photo library or add "stickers" on top of the card.
-
-Templates: Create pre-defined card templates for different occasions (Birthday, Thank You, etc.).
-
-Animations: Add subtle animations to make the user experience more delightful.
-
-📝 License
-
-This project is licensed under the MIT License.
+*   Cho phép người dùng chọn ảnh từ thư viện thay vì chỉ từ `Assets`.
+*   Export thiệp đã tạo thành một file ảnh `UIImage` và lưu vào thư viện.
+*   Thêm các "Sticker" (các ảnh nhỏ) có thể kéo thả lên thiệp.
+*   Tạo các "Template" (`GreetingCard` mẫu) cho các dịp lễ (Sinh nhật, Giáng sinh...).
